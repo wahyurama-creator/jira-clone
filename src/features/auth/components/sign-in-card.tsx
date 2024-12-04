@@ -10,25 +10,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
-
-const formSchema = z.object({
-    email: z.string().min(1, "* Required").email(),
-    password: z.string().min(1, "* Required"),
-});
+import { signInSchema } from "../schemas";
+import { useLogin } from "../api/use-login";
 
 export const SignInCard = () => {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const { mutate } = useLogin();
+
+    const form = useForm<z.infer<typeof signInSchema>>({
+        resolver: zodResolver(signInSchema),
         defaultValues: {
             email: "",
             password: "",
         }
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log({ values });
+    const onSubmit = (values: z.infer<typeof signInSchema>) => {
+        mutate({ json: values }); 
     };
-
 
     return (
         <Card className="w-full h-full md:w-[478px] border-none shadow-none">
@@ -46,7 +44,7 @@ export const SignInCard = () => {
                         <FormField
                             name="email"
                             control={form.control}
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
                                         <Input
@@ -61,7 +59,7 @@ export const SignInCard = () => {
                         <FormField
                             name="password"
                             control={form.control}
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
                                         <Input
@@ -109,7 +107,7 @@ export const SignInCard = () => {
                 <p>
                     Don&apos;t have an account?
                     <Link href={"/sign-up "}>
-                            <span className="text-blue-700">&nbsp;Sign Up</span>
+                        <span className="text-blue-700">&nbsp;Sign Up</span>
                     </Link>
                 </p>
             </CardContent>
