@@ -38,7 +38,7 @@ export const SignUpCard = () => {
                 <CardDescription>
                     By sign up, you agree to our{" "}
                     <Link href={"/privacy"}>
-                        <span className="text-blue-700">Privact Policy</span>
+                        <span className="text-blue-700">Privacy Policy</span>
                     </Link>{" "} and{" "}
                     <Link href={"/privacy"}>
                         <span className="text-blue-700">Terms of Service</span>
@@ -60,7 +60,7 @@ export const SignUpCard = () => {
                                         <Input
                                             {...field}
                                             type="text"
-                                            placeholder="Enter full name"
+                                            placeholder="Enter username"
                                         />
                                     </FormControl>
                                     <FormMessage />
