@@ -1,3 +1,5 @@
+"use client";
+
 import DottedSeparator from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +16,7 @@ import { signInSchema } from "../schemas";
 import { useLogin } from "../api/use-login";
 
 export const SignInCard = () => {
-    const { mutate } = useLogin();
+    const { mutate, isPending } = useLogin();
 
     const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),
@@ -71,7 +73,7 @@ export const SignInCard = () => {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                        <Button disabled={false} className="w-full" size="lg">
+                        <Button disabled={isPending} className="w-full" size="lg">
                             Login
                         </Button>
                     </form>
@@ -83,7 +85,7 @@ export const SignInCard = () => {
             <CardContent className="p-7 flex flex-col gap-y-4">
                 <Button
                     variant={"secondary"}
-                    disabled={false}
+                    disabled={isPending}
                     size={"lg"}
                     className="w-full"
                 >
@@ -92,7 +94,7 @@ export const SignInCard = () => {
                 </Button>
                 <Button
                     variant={"secondary"}
-                    disabled={false}
+                    disabled={isPending}
                     size={"lg"}
                     className="w-full"
                 >

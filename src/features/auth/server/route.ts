@@ -23,6 +23,22 @@ const app = new Hono()
         async (context) => {
             const {email, password} = context.req.valid("json");
 
+            const {account} = await createAdminClient();
+            const session = await account.createEmailPasswordSession(email, password);
+
+            setCookie(
+                context,
+                AUTH_COOKIE_KEY,
+                session.secret,
+                {
+                    path: "/",
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "strict",
+                    maxAge: 60 * 60 * 24 * 30,
+                },
+            );
+
             return context.json({email, password});
         },
     )
