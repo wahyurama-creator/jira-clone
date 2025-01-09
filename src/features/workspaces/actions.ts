@@ -1,7 +1,9 @@
 import {Account, Client, Databases, Query} from "node-appwrite";
 import {cookies} from "next/headers";
 import {AUTH_COOKIE_KEY} from "@/features/auth/constans";
-import {COLLECTION_MEMBERS_ID, DATABASE_ID} from "@/config";
+import {COLLECTION_MEMBERS_ID, COLLECTION_WORKSPACES_ID, DATABASE_ID} from "@/config";
+import {getMember} from "@/features/members/utils";
+import {Workspace} from "@/features/workspaces/types";
 
 export const getWorkspaces = async () => {
     try {
@@ -47,5 +49,45 @@ export const getWorkspaces = async () => {
             documents: [],
             total: 0,
         }
+    }
+}
+
+interface GetWorkspaceByIdProps {
+    workspaceId: string;
+}
+
+export const getWorkspaceById = async ({workspaceId}: GetWorkspaceByIdProps) => {
+    try {
+        const client = new Client()
+            .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+
+        const cookie = await cookies();
+        const session = cookie.get(AUTH_COOKIE_KEY);
+
+        if (!session) return null;
+
+        client.setSession(session.value);
+        const account = new Account(client);
+        const database = new Databases(client);
+        const user = await account.get();
+
+        const member = await getMember(
+            {
+                databases: database,
+                workspaceId: workspaceId,
+                userId: user.$id,
+            }
+        );
+
+        if (!member) return null;
+
+        return await database.getDocument<Workspace>(
+            DATABASE_ID,
+            COLLECTION_WORKSPACES_ID,
+            workspaceId,
+        );
+    } catch {
+        return null;
     }
 }
