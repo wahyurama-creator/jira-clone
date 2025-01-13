@@ -1,12 +1,12 @@
-import {Hono} from "hono";
-import {zValidator} from "@hono/zod-validator";
-import {createWorkspaceSchema, updateWorkspaceSchema} from "@/features/workspaces/schemas";
-import {sessionMiddleware} from "@/lib/session-middleware";
-import {BUCKET_IMAGES_ID, COLLECTION_MEMBERS_ID, COLLECTION_WORKSPACES_ID, DATABASE_ID} from "@/config";
-import {ID, Query} from "node-appwrite";
-import {MemberRole} from "@/features/members/types";
-import {generateInviteCode} from "@/lib/utils";
-import {getMember} from "@/features/members/utils";
+import { Hono } from "hono";
+import { zValidator } from "@hono/zod-validator";
+import { createWorkspaceSchema, updateWorkspaceSchema } from "@/features/workspaces/schemas";
+import { sessionMiddleware } from "@/lib/session-middleware";
+import { BUCKET_IMAGES_ID, COLLECTION_MEMBERS_ID, COLLECTION_WORKSPACES_ID, DATABASE_ID } from "@/config";
+import { ID, Query } from "node-appwrite";
+import { MemberRole } from "@/features/members/types";
+import { generateInviteCode } from "@/lib/utils";
+import { getMember } from "@/features/members/utils";
 
 const app = new Hono()
     .get(
@@ -44,7 +44,7 @@ const app = new Hono()
                 ],
             );
 
-            return context.json({data: workspaces});
+            return context.json({ data: workspaces });
         })
     .post(
         "/",
@@ -55,7 +55,7 @@ const app = new Hono()
             const user = context.get("user");
             const storage = context.get("storage");
 
-            const {name, image} = context.req.valid("form");
+            const { name, image } = context.req.valid("form");
 
             let uploadImageUrl: string | undefined
 
@@ -97,7 +97,7 @@ const app = new Hono()
                 }
             );
 
-            return context.json({data: workspace});
+            return context.json({ data: workspace });
         },
     )
     .patch(
@@ -109,8 +109,8 @@ const app = new Hono()
             const storage = context.get("storage");
             const user = context.get("user");
 
-            const {workspaceId} = context.req.param();
-            const {name, image} = context.req.valid("form");
+            const { workspaceId } = context.req.param();
+            const { name, image } = context.req.valid("form");
 
             const member = await getMember({
                 databases: databases,
@@ -119,7 +119,7 @@ const app = new Hono()
             });
 
             if (!member || member.role !== MemberRole.ADMIN) {
-                return context.json({error: "Unauthorized"}, 401);
+                return context.json({ error: "Unauthorized" }, 401);
             }
 
             let uploadImageUrl: string | undefined
@@ -151,8 +151,67 @@ const app = new Hono()
                 },
             );
 
-            return context.json({data: workspace}); 
+            return context.json({ data: workspace });
         }
+    )
+    .delete(
+        "/:workspaceId",
+        sessionMiddleware,
+        async (context) => {
+            const databases = context.get("databases");
+            const user = context.get("user");
+
+            const { workspaceId } = context.req.param();
+
+            const member = await getMember({
+                databases,
+                workspaceId,
+                userId: user.$id,
+            });
+
+            if (!member || member.role !== MemberRole.ADMIN) {
+                return context.json({ error: "Unauthorized" }, 401);
+            }
+
+            await databases.deleteDocument(
+                DATABASE_ID,
+                COLLECTION_WORKSPACES_ID,
+                workspaceId,
+            );
+
+            return context.json({ data: { $id: workspaceId } });
+        },
+    )
+    .post(
+        "/:workspaceId/reset-invite-code",
+        sessionMiddleware,
+        async (context) => {
+            const databases = context.get("databases");
+            const user = context.get("user");
+
+            const { workspaceId } = context.req.param();
+
+            const member = await getMember({
+                databases,
+                workspaceId,
+                userId: user.$id,
+            });
+
+            if (!member || member.role !== MemberRole.ADMIN) {
+                return context.json({ error: "Unauthorized" }, 401);
+            }
+
+            const workspace = await databases.updateDocument(
+                DATABASE_ID,
+                COLLECTION_WORKSPACES_ID,
+                workspaceId,
+                {
+                    inviteCode: generateInviteCode(6),
+                }
+            );
+
+            return context.json({ data: workspace });
+        },
     );
 
 export default app;

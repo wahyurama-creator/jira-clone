@@ -1,3 +1,5 @@
+"server-only";
+
 import { AUTH_COOKIE_KEY } from "@/features/auth/constans";
 import { cookies } from "next/headers";
 import { Client, Account, Databases } from "node-appwrite";

@@ -1,7 +1,8 @@
 import React from "react";
-import {useMedia} from "react-use";
-import {Drawer, DrawerContent} from "@/components/ui/drawer";
-import {Dialog, DialogContent} from "@/components/ui/dialog";
+import { useMedia } from "react-use";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ResponsiveModalProps {
     children: React.ReactNode;
@@ -10,7 +11,7 @@ interface ResponsiveModalProps {
 }
 
 export const ResponsiveModal = (
-    {children, open, onOpenChange}: ResponsiveModalProps
+    { children, open, onOpenChange }: ResponsiveModalProps
 ) => {
     const isDesktop = useMedia("(min-width: 1024px)", true);
 
@@ -18,8 +19,10 @@ export const ResponsiveModal = (
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
                 <DialogContent
-                    title={"Create a new workspace"}
                     className={"w-full sm:max-w-lg p-0 border-none overflow-y-auto hide-scrollbar max-h-[85vh]"}>
+                    <DialogTitle>
+                        <VisuallyHidden>Create a new workspace</VisuallyHidden>
+                    </DialogTitle>
                     {children}
                 </DialogContent>
             </Dialog>
