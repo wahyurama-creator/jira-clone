@@ -9,25 +9,28 @@ import DottedSeparator from "@/components/dotted-separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useCreateWorkspaces } from "@/features/workspaces/api/use-create-workspaces";
 import React, { useRef } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useCreateProject } from "../api/use-create-project";
+import { createProjectSchema } from "../shcemas";
+import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 
-interface CreateWorkspaceFormProps {
+interface CreateProjectFormProps {
     onCancel?: () => void;
 }
 
-export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
+export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
+    const workspaceId = useWorkspaceId();
     const router = useRouter();
-    const { mutate, isPending } = useCreateWorkspaces();
+    const { mutate, isPending } = useCreateProject();
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const form = useForm<z.infer<typeof createWorkspaceSchema>>({
-        resolver: zodResolver(createWorkspaceSchema),
+    const form = useForm<z.infer<typeof createProjectSchema>>({
+        resolver: zodResolver(createProjectSchema.omit({ workspaceId: true })),
         defaultValues: {
             name: "",
         }
@@ -37,6 +40,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
         const finalValues = {
             ...values,
             image: values.image instanceof File ? values.image : "",
+            workspaceId: workspaceId,
         };
 
         mutate(
@@ -44,7 +48,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
             {
                 onSuccess: ({ data }) => {
                     form.reset();
-                    router.push(`/workspaces/${data.$id}`);
+                    router.push(`/workspaces/${workspaceId}/projects/${data.$id}`);
                 }
             },
         );
@@ -61,7 +65,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
         <Card className={"w-full h-full border-none shadow-none"}>
             <CardHeader className={"flex p-7"}>
                 <CardTitle className={"text-xl font-bold"}>
-                    Create a new workspace
+                    Create a new project
                 </CardTitle>
             </CardHeader>
             <div className={"px-7"}>
@@ -82,7 +86,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                                         <FormControl>
                                             <Input
                                                 {...field}
-                                                placeholder={"Enter workspace name"}
+                                                placeholder={"Enter project name"}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -116,9 +120,9 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                                                 </Avatar>
                                             )}
                                             <div className={"flex flex-col"}>
-                                                <p className={"text-sm"}>Workspace Icon</p>
+                                                <p className={"text-sm"}>Project Icon</p>
                                                 <p className={"text-sm text-muted-foreground"}>
-                                                    JPG, PNG, JPEG, SVG. Max size of 1MB
+                                                    JPG, PNG, JPEG, SVG. Max size of 1 MB
                                                 </p>
                                                 <input
                                                     type="file"
@@ -174,7 +178,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                                 Cancel
                             </Button>
                             <Button size={"lg"} variant={"primary"} disabled={isPending}>
-                                Create Workspace
+                                Create Project
                             </Button>
                         </div>
                     </form>
