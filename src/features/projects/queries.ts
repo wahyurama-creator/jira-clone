@@ -2,6 +2,7 @@ import { COLLECTION_PROJECTS_ID, DATABASE_ID } from "@/config";
 import { createSessionClient } from "@/lib/appwrite";
 import { Project } from "./types";
 import { getMember } from "../members/utils";
+import { toast } from "sonner";
 
 
 interface GetProjectByIdProps {
@@ -11,7 +12,6 @@ interface GetProjectByIdProps {
 export const GetProjectById = async ({ projectId }: GetProjectByIdProps) => {
     const { account, databases } = await createSessionClient();
     const user = await account.get();
-
 
     const project = await databases.getDocument<Project>(
         DATABASE_ID,
@@ -26,6 +26,7 @@ export const GetProjectById = async ({ projectId }: GetProjectByIdProps) => {
     });
 
     if (!member) {
+        toast.error("You are not a member of this project");
         throw new Error("You are not a member of this project");
     }
 
