@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { createTaskSchema } from "../schemas";
-import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { DatePicker } from "@/components/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MemberAvatar } from "@/features/members/components/member-avatar";
@@ -33,7 +32,6 @@ export const UpdateTaskForm = ({
     memberOptions,
     initialValues,
 }: UpdateTaskFormProps) => {
-    const workspaceId = useWorkspaceId();
     const { mutate, isPending } = useUpdateTask();
 
     const form = useForm<z.infer<typeof createTaskSchema>>({
