@@ -294,7 +294,7 @@ const app = new Hono()
                 return context.json({ error: "Unathorized" }, 401);
             }
 
-            const project = await databases.getDocument(
+            const project = await databases.getDocument<Project>(
                 DATABASE_ID,
                 COLLECTION_PROJECTS_ID,
                 task.projectId,
@@ -322,6 +322,72 @@ const app = new Hono()
                 }
             });
         }
+    )
+    .post(
+        "/bulk-update",
+        sessionMiddleware,
+        zValidator(
+            "json",
+            z.object({
+                tasks: z.array(
+                    z.object({
+                        $id: z.string(),
+                        status: z.nativeEnum(TaskStatus),
+                        position: z.number().int().positive().min(1000).max(1_000_000),
+                    }),
+                )
+            })
+        ),
+        async (context) => {
+            const databases = context.get("databases");
+            const user = context.get("user");
+            const { tasks } = await context.req.valid("json");
+
+            const tasksToUpdate = await databases.listDocuments<Task>(
+                DATABASE_ID,
+                COLLECTION_TASKS_ID, [
+                Query.contains("$id", tasks.map((task) => task.$id)),
+            ]);
+
+            const workspaceIds = new Set(tasksToUpdate.documents.map(task => task.workspaceId));
+            if (workspaceIds.size !== 1) {
+                return context.json({ error: "All tasks must belong to the same workspace" });
+            }
+
+            const workspaceId = workspaceIds.values().next().value;
+
+            if (!workspaceId) {
+                return context.json({ error: "No tasks found" });
+            }
+
+            const memeber = await getMember({
+                databases,
+                workspaceId,
+                userId: user.$id,
+            })
+
+            if (!memeber) {
+                return context.json({ error: "Unauthorized" }, 401);
+            }
+
+            const updatedTasks = await Promise.all(
+                tasks.map(async (task) => {
+                    const { $id, status, position } = task;
+
+                    return databases.updateDocument<Task>(
+                        DATABASE_ID,
+                        COLLECTION_TASKS_ID,
+                        $id,
+                        {
+                            status,
+                            position,
+                        }
+                    );
+                })
+            );
+
+            return context.json({ data: updatedTasks });
+        },
     );
 
 export default app;
