@@ -38,12 +38,16 @@ export const Navigation = () => {
     const workspaceId = useWorkspaceId();
     const pathName = usePathname();
 
+    const normalizePath = (path: string) => path.replace(/\/+/g, "/").replace(/\/$/, "");
+
     return (
         <ul className={"flex flex-col"}>
             {
                 routes.map((item) => {
-                    const fullHref = `${workspaceId}${item.href}`;
-                    const isActive = pathName === fullHref;
+                    const fullHref = normalizePath(`/workspaces/${workspaceId}${item.href}`);
+                    const normalizedPathName = normalizePath(pathName);
+                    const isActive = normalizedPathName === fullHref;
+
                     const Icon = isActive ? item.activeIcon : item.icon;
 
                     return (

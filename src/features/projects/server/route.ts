@@ -7,6 +7,7 @@ import { ID, Query } from "node-appwrite";
 import { z } from "zod";
 import { createProjectSchema, updateProjectSchema } from "../shcemas";
 import { Project } from "../types";
+import { error } from "console";
 
 const app = new Hono()
     .get(
@@ -46,6 +47,33 @@ const app = new Hono()
             );
 
             return context.json({ data: projects });
+        },
+    )
+    .get(
+        "/:projectId",
+        sessionMiddleware,
+        async (context) => {
+            const user = context.get("user");
+            const databases = context.get("databases");
+            const { projectId } = context.req.param();
+
+            const project = await databases.getDocument<Project>(
+                DATABASE_ID,
+                COLLECTION_PROJECTS_ID,
+                projectId,
+            );
+
+            const member = await getMember({
+                databases,
+                workspaceId: project.workspaceId,
+                userId: user.$id,
+            });
+
+            if (!member) {
+                return context.json({ error: "Unauthorized" }, 401);
+            }
+
+            return context.json({ data: project }); 
         },
     )
     .post(

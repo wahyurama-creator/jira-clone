@@ -16,7 +16,7 @@ import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Workspace } from "@/features/workspaces/types";
-import { useUpdateWorkspaces } from "../api/use-update-workspaces";
+import { useUpdateWorkspace } from "../api/use-update-workspace";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useDeleteWorkspaces } from "../api/use-delete-workspaces";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ interface UpdateWorkspaceFormProps {
 
 export const UpdateWorkspaceForm = ({ onCancel, initialValues }: UpdateWorkspaceFormProps) => {
     const router = useRouter();
-    const { mutate, isPending } = useUpdateWorkspaces();
+    const { mutate, isPending } = useUpdateWorkspace();
     const { mutate: deleteWorkspace, isPending: isDeletingWorkspace } = useDeleteWorkspaces();
     const { mutate: resetInviteCode, isPending: isResetInviteCode } = useResetInviteCode();
     const inputRef = useRef<HTMLInputElement>(null);
@@ -102,11 +102,6 @@ export const UpdateWorkspaceForm = ({ onCancel, initialValues }: UpdateWorkspace
             {
                 form: finalValues,
                 param: { workspaceId: initialValues.$id },
-            },
-            {
-                onSuccess: () => {
-                    form.reset();
-                }
             },
         );
     };

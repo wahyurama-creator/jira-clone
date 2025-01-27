@@ -5,6 +5,7 @@ import DottedSeparator from "@/components/dotted-separator";
 import { useState } from "react";
 import { useUpdateTask } from "../api/use-update-task";
 import { Textarea } from "@/components/ui/textarea";
+import { LoadingDialog } from "@/components/loading-dialog";
 
 interface TaskDescriptionProps {
     task: Task;
@@ -20,6 +21,13 @@ export const TaskDescription = ({ task }: TaskDescriptionProps) => {
         updateTask({
             json: { description: value },
             param: { taskId: task.$id },
+        }, {
+            onSuccess: () => {
+                setIsEditing(false);
+            },
+            onError: () => {
+                setIsEditing(false);
+            },
         });
     };
 
@@ -54,6 +62,7 @@ export const TaskDescription = ({ task }: TaskDescriptionProps) => {
                         size={"sm"}
                         className="w-fit ml-auto"
                         disabled={isPendingUpdate}
+                        onClick={handleSaveChange}
                     >
                         {isPendingUpdate ? "Saving..." : "Save Changes"}
                     </Button>
@@ -68,6 +77,7 @@ export const TaskDescription = ({ task }: TaskDescriptionProps) => {
                 </div>
             )}
 
+            <LoadingDialog isOpen={isPendingUpdate} message="Saving your changes..." />
         </div>
     );
 };

@@ -9,6 +9,7 @@ import { useInviteCode } from "../hooks/use-invite-code";
 import { useWorkspaceId } from "../hooks/use-workspace-id";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LoadingDialog } from "@/components/loading-dialog";
 
 interface JoinWorkspaceFormProps {
     initialValues: {
@@ -39,41 +40,45 @@ export const JoinWorkspaceForm = ({ initialValues }: JoinWorkspaceFormProps) => 
     };
 
     return (
-        <Card className="w-full h-full border-none shadow-none">
-            <CardHeader className="p-7">
-                <CardTitle className="text-xl font-bold">
-                    Join workspace
-                </CardTitle>
-                <CardDescription>
-                    You&apos;ve been invited to join the <strong>{initialValues.name}</strong> workspace
-                </CardDescription>
-            </CardHeader>
-            <div className="px-7">
-                <DottedSeparator />
-            </div>
-            <CardContent className="p-7">
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-3">
-                    <Button
-                        asChild
-                        className="w-full lg:w-fit"
-                        variant="secondary"
-                        size={"lg"}
-                        type="button"
-                        disabled={isPending}>
-                        <Link href={"/"}>
-                            Cancel
-                        </Link>
-                    </Button>
-                    <Button
-                        className="w-full lg:w-fit"
-                        size={"lg"}
-                        type="button"
-                        onClick={onSubmit}
-                        disabled={isPending}>
-                        Join Workspace
-                    </Button>
+        <>
+            <LoadingDialog isOpen={isPending} message="Joining workspace..." />
+
+            <Card className="w-full h-full border-none shadow-none">
+                <CardHeader className="p-7">
+                    <CardTitle className="text-xl font-bold">
+                        Join workspace
+                    </CardTitle>
+                    <CardDescription>
+                        You&apos;ve been invited to join the <strong>{initialValues.name}</strong> workspace
+                    </CardDescription>
+                </CardHeader>
+                <div className="px-7">
+                    <DottedSeparator />
                 </div>
-            </CardContent>
-        </Card>
+                <CardContent className="p-7">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-3">
+                        <Button
+                            asChild
+                            className="w-full lg:w-fit"
+                            variant="secondary"
+                            size={"lg"}
+                            type="button"
+                            disabled={isPending}>
+                            <Link href={"/"}>
+                                Cancel
+                            </Link>
+                        </Button>
+                        <Button
+                            className="w-full lg:w-fit"
+                            size={"lg"}
+                            type="button"
+                            onClick={onSubmit}
+                            disabled={isPending}>
+                            Join Workspace
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </>
     );
 };
