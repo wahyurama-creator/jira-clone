@@ -22,6 +22,9 @@ export const useDeleteProject = () => {
         onSuccess: async ({ data }) => {
             toast.success("Project delete successfully");
 
+            await queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            await queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });
+
             await queryClient.invalidateQueries({ queryKey: ["projects"] });
             await queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
         },

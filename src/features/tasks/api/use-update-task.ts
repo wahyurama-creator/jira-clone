@@ -22,6 +22,9 @@ export const useUpdateTask = () => {
         onSuccess: async ({data}) => {
             toast.success("Task updated successfully");
 
+            await queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            await queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });
+
             await queryClient.invalidateQueries({ queryKey: ["tasks"] });
             await queryClient.invalidateQueries({ queryKey: ["task", data.$id] });
         },

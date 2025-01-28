@@ -22,6 +22,9 @@ export const useUpdateProject = () => {
         onSuccess: async ({ data }) => {
             toast.success("Project update successfully");
 
+            await queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            await queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });
+            
             await queryClient.invalidateQueries({ queryKey: ["projects"] });
             await queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
         },
