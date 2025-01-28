@@ -124,7 +124,7 @@ export const SignUpCard = () => {
                     disabled={isPending}
                     size={"lg"}
                     className="w-full"
-                    onClick={() => signInWithGithub}
+                    onClick={() => signInWithGithub()}
                 >
                     <FaGithub className="mr-2 size-5" />
                     Login with Github

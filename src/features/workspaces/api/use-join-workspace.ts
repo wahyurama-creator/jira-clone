@@ -21,6 +21,7 @@ export const useJoinWorkspace = () => {
         },
         onSuccess: async ({ data }) => {
             toast.success("Joined workspace successfully");
+            
             await queryClient.invalidateQueries({ queryKey: ["workspaces"] });
             await queryClient.invalidateQueries({ queryKey: ["workspace", data.$id] });
         },
