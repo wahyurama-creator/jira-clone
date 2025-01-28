@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 
 export async function signInWithGithub() {
     const { account } = await createAdminClient();
-    const origin = (await headers()).get("origin");
+    const header = await headers();
+    const origin = header.get("origin");
     const redirectUrl = await account.createOAuth2Token(
         OAuthProvider.Github,
         `${origin}/oauth`,
@@ -19,11 +20,16 @@ export async function signInWithGithub() {
 
 export async function signInWithGoogle() {
     const { account } = await createAdminClient();
-    
+
+    const header = await headers();
+    const origin = header.get("origin");
+
     const redirectUrl = await account.createOAuth2Token(
         OAuthProvider.Google,
-        `${process.env.NEXT_PUBLIC_APP_URL}/oauth`,
-        `${process.env.NEXT_PUBLIC_APP_URL}/sign-up`,
+        // `${process.env.NEXT_PUBLIC_APP_URL}/oauth`,
+        // `${process.env.NEXT_PUBLIC_APP_URL}/sign-up`,
+        `${origin}/oauth`,
+        `${origin}/sign-up`,
     );
 
     return redirect(redirectUrl);
