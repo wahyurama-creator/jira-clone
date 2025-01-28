@@ -19,11 +19,11 @@ export async function signInWithGithub() {
 
 export async function signInWithGoogle() {
     const { account } = await createAdminClient();
-    const origin = (await headers()).get("origin");
+    // const origin = (await headers()).get("origin");
     const redirectUrl = await account.createOAuth2Token(
         OAuthProvider.Google,
-        `${origin}/oauth`,
-        `${origin}/sign-up`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/oauth`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/sign-up`,
     );
 
     return redirect(redirectUrl);
