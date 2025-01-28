@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getMember } from '../utils';
 import { COLLECTION_MEMBERS_ID, DATABASE_ID } from '@/config';
 import { Query } from 'node-appwrite';
-import { MemberRole } from "../types";
+import { Member, MemberRole } from "../types";
 
 const app = new Hono()
     .get(
@@ -34,7 +34,7 @@ const app = new Hono()
                 return context.json({ error: "Member not found" }, 401);
             }
 
-            const members = await databases.listDocuments(
+            const members = await databases.listDocuments<Member>(
                 DATABASE_ID,
                 COLLECTION_MEMBERS_ID,
                 [
