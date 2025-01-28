@@ -15,6 +15,8 @@ import Link from "next/link";
 import { signInSchema } from "../schemas";
 import { useLogin } from "../api/use-login";
 
+import { signInWithGithub, signInWithGoogle } from "@/lib/oauth";
+
 export const SignInCard = () => {
     const { mutate, isPending } = useLogin();
 
@@ -27,7 +29,7 @@ export const SignInCard = () => {
     });
 
     const onSubmit = (values: z.infer<typeof signInSchema>) => {
-        mutate({ json: values }); 
+        mutate({ json: values });
     };
 
     return (
@@ -88,6 +90,7 @@ export const SignInCard = () => {
                     disabled={isPending}
                     size={"lg"}
                     className="w-full"
+                    onClick={() => signInWithGoogle()}
                 >
                     <FcGoogle className="mr-2 size-5" />
                     Login with Google
@@ -97,6 +100,7 @@ export const SignInCard = () => {
                     disabled={isPending}
                     size={"lg"}
                     className="w-full"
+                    onClick={() => signInWithGithub}
                 >
                     <FaGithub className="mr-2 size-5" />
                     Login with Github
