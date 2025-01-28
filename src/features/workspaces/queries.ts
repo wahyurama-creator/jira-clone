@@ -1,5 +1,4 @@
-import { COLLECTION_MEMBERS_ID, COLLECTION_WORKSPACES_ID, DATABASE_ID } from "@/config";
-import { Workspace } from "@/features/workspaces/types";
+import { COLLECTION_MEMBERS_ID, DATABASE_ID } from "@/config";
 import { createSessionClient } from "@/lib/appwrite";
 import { Query } from "node-appwrite";
 

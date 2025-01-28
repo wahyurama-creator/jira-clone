@@ -80,7 +80,6 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
             const destinationIndex = destination?.index ?? 0;
 
             if (!movedTask) {
-                console.log("No task found at the source index");
                 return prevTask;
             }
 

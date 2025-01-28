@@ -1,4 +1,4 @@
-import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
+import { parseAsString, useQueryState } from "nuqs";
 
 export const useUpdateTaskModal = () => {
     const [taskId, setTaskId] = useQueryState(
